@@ -34,6 +34,7 @@ const Cart: React.FC = () => {
                         renderItem={(item: any) => (
                             <List.Item actions={[<Button onClick={() => removeFromCart(item.id)} type="primary" danger style={{ float: 'right' }}>Remove</Button>]}>
                                 <List.Item.Meta
+                                    avatar={<img src={item.images} style={{ width: '80px', height: '80px' }} />}
                                     title={item.title}
                                     description={`Price: $${item.price}`}
                                 />

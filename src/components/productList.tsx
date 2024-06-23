@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Table, Button, notification, Spin, Space, Modal } from 'antd';
+import { Table, Button, message, Spin, Space, Modal, Popconfirm, Image } from 'antd';
 import { externalApi, localApi } from '../services/api';
 import { useCart } from '../context/cartContext';
 import EditProduct from './editProduct';
@@ -38,15 +38,15 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             queryClient.invalidateQueries({
                 queryKey: ['products']
             });
-            notification.success({
-                message: 'Products Loaded',
-                description: 'Products have been loaded from the external API.',
+            message.success({
+                type: 'success',
+                content: 'Products have been loaded from the external API.',
             });
         } catch (error) {
             console.error('Error fetching and storing products:', error);
-            notification.error({
-                message: 'Error Fetching Products',
-                description: 'An error occurred while fetching products.',
+            message.error({
+                type: 'error',
+                content: 'An error occurred while fetching products.',
             }
             );
         };
@@ -85,9 +85,9 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             queryClient.invalidateQueries({
                 queryKey: ['products']
             });
-            notification.success({
-                message: 'Product Deleted',
-                description: 'Product has been deleted.',
+            message.success({
+                type: 'success',
+                content: 'Product has been deleted.',
             });
         }
     });
@@ -123,6 +123,18 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             key: 'description',
             sorter: (a: any, b: any) => a.title.localeCompare(b.title),
         },
+        {
+            title: 'Image',
+            dataIndex: 'images',
+            key: 'image',
+            render: (images: string[]) => (
+                <Image
+                    width={80}
+                    src={images[0]}
+                    alt="Product Image"
+                />
+            )
+        },
         ...(!isAdmin ? [
             {
                 title: 'Actions',
@@ -137,11 +149,15 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
                 key: 'actions',
                 render: (_: any, record: any) => (
                     <Space size={'middle'}>
-                        <Button onClick={() => {
-                            setEditProduct(record.id);
-                            setModal(true);
-                        }}>Edit</Button>
-                        <Button danger onClick={() => handleDelete(record.id)}>Delete</Button>
+                        <Button onClick={() => { setEditProduct(record.id); setModal(true); }}>Edit</Button>
+                        <Popconfirm
+                            title="Do you want to delete this product?"
+                            onConfirm={() => handleDelete(record.id)}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button type="primary" danger> Delete </Button>
+                        </Popconfirm>
                     </Space>
                 )
             }])
@@ -157,7 +173,7 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
 
     return (
         <>
-            <Table dataSource={filteredProducts} columns={columns} rowKey="id"/>
+            <Table dataSource={filteredProducts} columns={columns} rowKey="id" />
             <Modal title="Edit Product" visible={modal} onCancel={() => setModal(false)} footer={null}>
                 <EditProduct productId={editProduct} onclose={() => setModal(false)} />
             </Modal>

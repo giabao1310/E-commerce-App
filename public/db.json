@@ -967,10 +967,14 @@
       }
     },
     {
-      "id": "a67e",
-      "title": "hello",
-      "price": "456",
-      "description": "this is a hello"
+      "id": "a260",
+      "title": "t-shirt",
+      "price": "432",
+      "description": "this is a t-shirt",
+      "image": "https://cdn.pixabay.com/photo/2013/07/13/14/08/apparel-162192_1280.png",
+      "images": [
+        "https://cdn.pixabay.com/photo/2013/07/13/14/08/apparel-162192_1280.png"
+      ]
     }
   ]
 }

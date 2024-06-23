@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Input, Avatar } from 'antd';
+import { Layout, Menu, Input, Avatar, Badge, Space } from 'antd';
 import { HomeOutlined, ShoppingCartOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
 import ProductList from '../components/productList';
-import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/cartContext';
 
 const { Header, Content, Sider } = Layout;
 const { Search } = Input;
@@ -11,6 +11,7 @@ const { Search } = Input;
 const Dashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const cartItemCount = useCart().cart.length;
 
     const handleSearch = (value: string) => {
         setSearchTerm(value);
@@ -44,9 +45,13 @@ const Dashboard = () => {
                         </div>
                     </div>
                     <div className='userWrapper'>
-                        <BellOutlined/>
-                        <Avatar icon={<UserOutlined />} />
-                        <span>User</span>
+                        <Space>
+                            <Badge count={cartItemCount}>
+                                <BellOutlined style={{ fontSize: '24px' }} />
+                            </Badge>
+                            <Avatar icon={<UserOutlined />} />
+                            <span>User</span>
+                        </Space>
                     </div>
                 </Header>
                 <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
