@@ -1,4 +1,3 @@
-import React from "react";
 import { Layout, Menu,  Avatar } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import { HomeOutlined, AppstoreAddOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';

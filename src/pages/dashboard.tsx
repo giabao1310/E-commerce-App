@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Layout, Menu, Input, Avatar, Badge, Space } from 'antd';
 import { HomeOutlined, ShoppingCartOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
 import ProductList from '../components/productList';
