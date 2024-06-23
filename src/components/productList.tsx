@@ -108,7 +108,7 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             dataIndex: 'price',
             key: 'price',
             sorter: (a: any, b: any) => a.price - b.price,
-            filters: [
+            filter: [
                 { text: 'Under $10', value: [0, 10] },
                 { text: '$10 - $50', value: [10, 20] },
                 { text: '$50 - $100', value: [50, 100] },
