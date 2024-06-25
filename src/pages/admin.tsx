@@ -1,4 +1,4 @@
-import { Layout, Menu,  Avatar } from "antd";
+import { Layout, Menu, Avatar , Space } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import { HomeOutlined, AppstoreAddOutlined, BellOutlined, UserOutlined } from '@ant-design/icons';
 
@@ -26,9 +26,11 @@ const Admin = () => {
                 <Header className='header'>
                     <div></div>
                     <div className="userWrapper">
-                        <BellOutlined />
-                        <Avatar icon={<UserOutlined />} />
-                        <span>Admin</span>
+                        <Space>
+                            <BellOutlined style={{ fontSize: '20px' }} />
+                            <Avatar icon={<UserOutlined />} />
+                            <span>Admin</span>
+                        </Space>
                     </div>
                 </Header>
                 <Content style={{ margin: '0 16px' }}>

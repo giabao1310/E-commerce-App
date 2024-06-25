@@ -2,17 +2,56 @@ import React, { useContext, createContext, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { message } from "antd";
 
-const CartContext = createContext<any>(null);
+interface CartProduct {
+    id: number;
+    title: string;
+    price: number;
+    quantity: number;
+    images: string[];
+}
+
+interface CartContextProps {
+    cart: CartProduct[];
+    addToCart: (product: CartProduct) => void;
+    cartQuantity: (id: number, quantity: number) => void;
+    removeFromCart: (productId: string) => void;
+}
+
+export const CartContext = createContext<CartContextProps>({
+    cart: [],
+    addToCart: () => {},
+    cartQuantity: () => {},
+    removeFromCart: () => {},
+});
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     const [cart, setCart] = useState<any[]>([]);
 
-    const addToCart = (product: any) => {
-        setCart((prevCart) => [...prevCart, product]);
+    const addToCart = (product: CartProduct) => {
+        setCart(prevCart => {
+            const existingProduct = prevCart.find(cartItem => cartItem.id === product.id);
+            if (existingProduct) {
+                return prevCart.map(cartProduct =>
+                    cartProduct.id === product.id
+                        ? { ...cartProduct, quantity: cartProduct.quantity + 1 }
+                        : cartProduct
+                );
+            } else {
+                return [...prevCart, { ...product, quantity: 1 }];
+            }
+        });
         message.open({
             type: 'success',
             content: 'Successfully added',
         });
+    };
+
+    const cartQuantity = (id: number, quantity: number) => {
+        setCart(prevCart =>
+            prevCart.map(product =>
+                product.id === id ? { ...product, quantity } : product
+            )
+        );
     };
 
     const { mutate: removeFromCart } = useMutation({
@@ -28,7 +67,7 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart }}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart , cartQuantity }}>
             {children}
         </CartContext.Provider>
     )

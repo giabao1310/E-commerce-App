@@ -43,19 +43,19 @@ const AddProduct: React.FC = () => {
 
     return (
         <Form form={form} onFinish={onFinish} style={{ marginTop: '50px' }}>
-            <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Please fill in the title!' }]}>
+            <Form.Item name="title" label="Title" rules={[{ message: 'Please fill in the title!' }]}>
                 <Input />
             </Form.Item>
-            <Form.Item name="price" label="Price" rules={[{ required: true, message: 'Please fill the price!' }]}>
+            <Form.Item name="price" label="Price" rules={[{ message: 'Please fill the price!' }]}>
                 <Input type="number" />
             </Form.Item>
-            <Form.Item name="description" label="Description" rules={[{ required: true, message: 'Please fill the description!' }]}>
+            <Form.Item name="description" label="Description" rules={[{ message: 'Please fill the description!' }]}>
                 <TextArea rows={4} />
             </Form.Item>
             <Form.Item
                 name="image"
                 label="Image URL"
-                rules={[{ required: true, message: 'Please enter the product image URL!' }]}
+                rules={[{ message: 'Please enter the product image URL!' }]}
             >
                 <Input />
             </Form.Item>

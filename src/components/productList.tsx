@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Table, Button, message, Spin, Space, Modal, Popconfirm, Image } from 'antd';
+import { Table, Button, message, Spin, Space, Modal, Image } from 'antd';
 import { externalApi, localApi } from '../services/api';
 import { useCart } from '../context/cartContext';
 import EditProduct from './editProduct';
@@ -12,10 +12,11 @@ const contentStyle: React.CSSProperties = {
 };
 const content = <div style={contentStyle} />;
 
+const { confirm } = Modal;
 
 const ProductList = ({ searchTerm }: { searchTerm: string }) => {
     const queryClient = useQueryClient();
-    const { addToCart } = useCart();
+    const { cart, addToCart } = useCart();
     const [modal, setModal] = useState(false);
     const [editProduct, setEditProduct] = useState(null);
 
@@ -92,6 +93,21 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
         }
     });
 
+    const deleteConfirm = (productId: number) => {
+        confirm({
+            title: 'Remove this product ?',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                handleDelete(productId);
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    };
+
     const handleDelete = (id: number) => {
         deleteMutation(id);
     }
@@ -108,12 +124,12 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             dataIndex: 'price',
             key: 'price',
             sorter: (a: any, b: any) => a.price - b.price,
-            filter: [
+            filters: [
                 { text: 'Under $10', value: [0, 10] },
                 { text: '$10 - $50', value: [10, 20] },
                 { text: '$50 - $100', value: [50, 100] },
                 { text: '$100 - $1000', value: [100, 1000] },
-                { text: 'Over $1000', value: [100, 10000] }
+                { text: 'Over $1000', value: [1000, 10000] }
             ],
             onFilter: (value: any, record: any) => record.price > value[0] && record.price < value[1],
         },
@@ -139,9 +155,12 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
             {
                 title: 'Actions',
                 key: 'actions',
-                render: (_: any, record: any) => (
-                    <Button onClick={() => addToCart(record)}>Add to Cart</Button>
-                )
+                render: (_: any, record: any) => {
+                    const inCart = cart.some((item: any) => item.id === record.id);
+                    return (
+                        <Button onClick={() => addToCart(record)} disabled={inCart} > {inCart ? 'Added' : 'Add To Cart'}</Button >
+                    )
+                }
             }
         ] : [
             {
@@ -150,35 +169,28 @@ const ProductList = ({ searchTerm }: { searchTerm: string }) => {
                 render: (_: any, record: any) => (
                     <Space size={'middle'}>
                         <Button onClick={() => { setEditProduct(record.id); setModal(true); }}>Edit</Button>
-                        <Popconfirm
-                            title="Do you want to delete this product?"
-                            onConfirm={() => handleDelete(record.id)}
-                            okText="Yes"
-                            cancelText="No"
-                        >
-                            <Button type="primary" danger> Delete </Button>
-                        </Popconfirm>
-                    </Space>
+                        <Button type="primary" danger onClick={() => deleteConfirm(record.id)}> Delete </Button>
+                    </Space >
                 )
             }])
     ]
 
-    const filteredProducts = (products || []).filter((product: any) =>
-        product.title && product.title.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+const filteredProducts = (products || []).filter((product: any) =>
+    product.title && product.title.toLowerCase().includes(searchTerm.toLowerCase())
+)
 
-    if (isLoading) {
-        return <Spin tip="Loading product information...">{content}</Spin>
-    }
+if (isLoading) {
+    return <Spin tip="Loading product information...">{content}</Spin>
+}
 
-    return (
-        <>
-            <Table dataSource={filteredProducts} columns={columns} rowKey="id" />
-            <Modal title="Edit Product" visible={modal} onCancel={() => setModal(false)} footer={null}>
-                <EditProduct productId={editProduct} onclose={() => setModal(false)} />
-            </Modal>
-        </>
-    );
+return (
+    <>
+        <Table dataSource={filteredProducts} columns={columns} rowKey="id" />
+        <Modal title="Edit Product" visible={modal} onCancel={() => setModal(false)} footer={null}>
+            <EditProduct productId={editProduct} onclose={() => setModal(false)} />
+        </Modal>
+    </>
+);
 }
 
 export default ProductList;

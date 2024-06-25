@@ -1,14 +1,34 @@
 import React from "react";
 import { useCart } from "../context/cartContext";
-import { List, Button, Layout , Menu } from "antd";
+import { List, Button, Layout, Menu, InputNumber , Modal } from "antd";
 import { HomeOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 
+const { confirm } = Modal;
 const { Content, Sider } = Layout;
 
 const Cart: React.FC = () => {
-    const { cart, removeFromCart } = useCart();
+    const { cart, removeFromCart, cartQuantity } = useCart();
+
+    const getTotalPrice = () => {
+        return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    };
+
+    const deleteConfirm = (productId: string) => {
+        confirm({
+            title: 'Remove this product from cart?',
+            okText: 'Yes',
+            okType: 'danger',
+            cancelText: 'No',
+            onOk() {
+                removeFromCart(productId);
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    };
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -32,15 +52,29 @@ const Cart: React.FC = () => {
                         bordered
                         dataSource={cart}
                         renderItem={(item: any) => (
-                            <List.Item actions={[<Button onClick={() => removeFromCart(item.id)} type="primary" danger style={{ float: 'right' }}>Remove</Button>]}>
+                            <List.Item
+                                actions={[
+                                    <InputNumber
+                                        min={1}
+                                        max={100}
+                                        value={item.quantity}
+                                        onChange={(value) => cartQuantity(item.id, value)}
+                                    />,
+                                    <Button onClick={() => deleteConfirm(item.id)} type="primary" danger>Remove</Button>
+                                ]}
+                            >
                                 <List.Item.Meta
-                                    avatar={<img src={item.images} style={{ width: '80px', height: '80px' }} />}
+                                    avatar={<img src={item.images[0]} style={{ width: '80px', height: '80px' }} alt={item.title} />}
                                     title={item.title}
                                     description={`Price: $${item.price}`}
                                 />
+                                <div>Total: ${item.price * item.quantity}</div>
                             </List.Item>
                         )}
                     />
+                    <div style={{ marginTop: '16px', fontWeight: 'bold' }}>
+                        Total Price: ${getTotalPrice()}
+                    </div>
                 </Content>
             </Layout>
         </Layout>
